@@ -491,4 +491,45 @@ start_pair = start_pair + INTERVAL 30 MINUTE,
 end_pair = end_pair + INTERVAL 30 MINUTE;
 
 --Задача 58
---
+--Добавить отзыв с рейтингом 5 на жилье, находящиеся по адресу "11218,
+--Friel Place, New York", от имени "George Clooney"
+INSERT INTO Reviews
+VALUES(
+		(
+			SELECT MAX(temp.id) + 1
+			FROM Reviews temp
+		),
+		(
+			SELECT res.id
+			FROM Reservations res
+				INNER JOIN Users u ON u.id = res.user_id
+				INNER JOIN Rooms R ON R.id = res.room_id
+			WHERE u.name = "George Clooney"
+				AND R.address = "11218, Friel Place, New York"
+		),
+		5
+	)
+
+--Задача 59
+-- Вывести пользователей,указавших Белорусский номер телефона?
+ --Телефонный код Белоруссии +375.
+SELECT *
+FROM Users
+WHERE phone_number LIKE "+375%";
+
+-- Задача 60
+--Выведите идентификаторы преподавателей, которые хотя бы один раз за всё время
+--преподавали в каждом из одиннадцатых классов.
+SELECT DISTINCT teacher
+FROM Schedule
+WHERE class IN (
+    SELECT id
+    FROM Class
+    WHERE name LIKE '11%'
+)
+GROUP BY teacher
+HAVING COUNT(DISTINCT class) = (
+    SELECT COUNT(DISTINCT id)
+    FROM Class
+    WHERE name LIKE '11%'
+);
