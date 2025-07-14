@@ -12,4 +12,4 @@ cur.execute("""CREATE TABLE IF NOT EXISTS  Students2(
     last_name TEXT NOT NULL);
 """)
 db.commit() # Сохраняем изменения
-print("Создание таблицы Students")
+print("Создание таблицы Students2")
