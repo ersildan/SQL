@@ -30,4 +30,12 @@ base3 = pd.DataFrame([
 sns_df = sns.load_dataset('titanic') # Встроенные датасет
 # print(sns_df.head()) # эту функцию рассмотрим подробнее в следующем стэпе (посмотреть первые пять строк)
 # print(sns_df) вывод всех данных 15 сначала и 15 с конца - середина ...
+# print(sns_df.tail()) # выводит последние 5 строк
+#sample_df = sns_df.sample(frac=0.3, replace=True)
+#print(sample_df)
 
+# print(sns_df.shape) # 891 строка и 15 столбцов
+# print(sns_df.columns) # выведет список всех столбцов
+# print(sns_df.dtypes) # пишет какой тип элементов
+#sns_df.notnull().sum()
+print(sns_df.tail(-5))
