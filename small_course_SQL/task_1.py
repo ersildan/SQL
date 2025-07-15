@@ -44,8 +44,8 @@ def check_user(login, password, sicret_code):
         raise Exception ('\033[31mОшибка ввода\033[0m: Логин должен быть не меньше 3 символов')
     if len(password) < 3:
         raise Exception ('\033[31mОшибка ввода\033[0m: Пароль должен быть не меньше 3 символов')
-    if sicret_code.isdigit() is not True:
-        raise Exception ('\033[31mОшибка ввода\033[0m: Секретный код должен быть только из цифр')
+    if sicret_code.isdigit() is not True and len(sicret_code) != 4:
+        raise Exception ('\033[31mОшибка ввода\033[0m: Секретный код должен быть только из 4 цифр')
 
 def check_user_in_base(login, password):
     """Проверка логина и пароля в базе данных"""
