@@ -56,7 +56,17 @@ def check_summa(summa, choice):
     cur.execute("""SELECT * FROM users_balance;""") # Читаем баланс в таблицу users_balance
 
     balance = cur.fetchone()
-    print(balance)
+    balance_usd = balance[int(choice) + 1]
+
+    if int(summa) > balance_usd:
+        raise Exception ('\033[31mНедостаточно средств USD для обмена на RUB.\033[0m\n'
+                        f'На балансе доступно: {balance_usd} $\n'
+                         'Повторите попытку')
+
+    else:
+        print(f'Совершен обмен валют {summa}$. '
+              f'На балансе USD: {balance_usd - int(summa)}$\n'
+              f'Пополнение счета RUB на {int(summa) * 70}р. Баланс RUB: {balance[int(choice)] + int(summa) * 70}р')
 
 def func_rub():
     """Меняем (USD или EUR) на рубли"""
@@ -74,7 +84,6 @@ def func_rub():
             else:
                 exit('Выход из обменника')
 
-            print(txt2)
             summa = input()
 
             check_summa(summa, choice) # Вызываем функцию для проверки остатка и правильность ввода числа
