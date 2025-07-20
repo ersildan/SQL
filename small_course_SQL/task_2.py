@@ -63,10 +63,14 @@ def check_summa(summa, choice):
                         f'На балансе доступно: {balance_usd} $\n'
                          'Повторите попытку')
 
-    else:
+    elif choice == '1':
         print(f'Совершен обмен валют {summa}$. '
               f'На балансе USD: {balance_usd - int(summa)}$\n'
               f'Пополнение счета RUB на {int(summa) * 70}р. Баланс RUB: {balance[int(choice)] + int(summa) * 70}р')
+    elif choice == '2':
+        print(f'Совершен обмен валют {summa}€. '
+              f'На балансе EUR: {balance_usd - int(summa)}€\n'
+              f'Пополнение счета RUB на {int(summa) * 80}р. Баланс RUB: {balance[int(choice) - 1] + int(summa) * 80}р')
 
 def func_rub():
     """Меняем (USD или EUR) на рубли"""
