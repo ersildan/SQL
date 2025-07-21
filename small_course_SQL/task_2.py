@@ -1,15 +1,10 @@
 import sqlite3
 
-"""Задание обменник валюты"""
-
-
 """Создаем базу данных users_balance"""
-
 
 db = sqlite3.connect('exchanger.db') # Создаем и подключаем БД
 cur = db.cursor() # Переменная для управления БД
 print("1. Создали и подключились к базе данных exchanger.db")
-
 
 """Создаём таблицу users_data, если она не создана.
 Задаем названия и тип данных для колонок."""
@@ -46,10 +41,11 @@ d = {
 }
 
 def update_balance(amount, choice_1, choice_2, balance, name_exc):
-    """Функция для обновления данных в Balance_RUB"""
+    """Функция для обновления данных в users_balance"""
 
-    code = choice_1 + choice_2
-    dict_code = {'12': 1/70, '13': 1/80,
+    code = choice_1 + choice_2 # Кодировка для курса валют словарь dict_code
+    dict_code = {
+         '12': 1/70, '13': 1/80,
          '21': 70, '23': 0.87,
          '31': 80, '32': 1.15
     }
@@ -58,7 +54,7 @@ def update_balance(amount, choice_1, choice_2, balance, name_exc):
     new_balance = balance - amount  # Баланс первой валюты, которую отдали для обмена
     name_exc_ = 'Balance_' + d[choice_2] # Имя валюты у которой пополнили баланс при обмене
 
-    print(f'\nСвершен обмен валют {amount} {d[choice_1]} на {round(update_amount, 2)} {d[choice_2]}')
+    print(f'Совершен обмен валют {amount} {d[choice_1]} на {round(update_amount, 2)} {d[choice_2]}')
 
    # Обновляем users_balance новыми данными
     cur.executescript(f"""
@@ -90,15 +86,22 @@ def check_amount(amount, choice_1):
 
     choice_2 = input() # Выбор пользователя на что он будет менять свою валюту
 
-    if choice_2.isdigit() is not True:
+    if choice_2.isdigit() is not True: # Проверка на цифры
         raise Exception('\033[31mОшибка\033[0m: Нужно вводить только цифры без букв')
-    elif choice_1 == choice_2 or choice_2 not in ['1', '2', '3']: # Дополнительная проверка
+    if choice_1 == choice_2 or choice_2 not in ['1', '2', '3']: # Дополнительная проверка
         raise Exception('\033[31mОшибка\033[0m: Выбирайте, пожалуйста, из доступных вариантов')
 
     update_balance(amount, choice_1, choice_2, balance, name_exc) # Функция по обновлению баланса валют
 
-    print(' ⭐  Программа успешно завершена ⭐ ')
+    cur.execute("""SELECT * FROM users_balance;""") # Читаем таблицу с новыми данными
+    new_data = cur.fetchone() # Берем первую строку из таблицы users_balance
 
+    b1 = new_data[int(choice_1)] # Баланс валюты, которую отдали
+    b2 = new_data[int(choice_2)] # Баланс валюты, которую пополнили
+
+    print(f"Баланс {d[choice_1]} = {round(b1, 2)}\nБаланс {d[choice_2]} = {round(b2, 2)}")
+    print('p.s. Округление до 2 цифр после запятой')
+    print('⭐   Программа успешно завершена   ⭐')
 
 def func():
     """Выбираем валюту для обмена"""
@@ -129,9 +132,10 @@ def func():
 
             amount = input() # Желаемая сумма для обмена на другую валюту
             check_amount(amount, choice_1) # Проверка введенной суммы (amount)
+
             break
         except Exception as e:
             print(e)
 
 if __name__ == '__main__':
-    func() # стартуем
+    func() # Старт программы
