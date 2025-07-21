@@ -5,6 +5,7 @@ import sqlite3
 
 """Создаем базу данных users_balance"""
 
+
 db = sqlite3.connect('exchanger.db') # Создаем и подключаем БД
 cur = db.cursor() # Переменная для управления БД
 print("1. Создали и подключились к базе данных exchanger.db")
@@ -20,7 +21,7 @@ cur.execute("""
     Balance_EUR FLOAT NOT NULL
     );""")
 print("2. Создали таблицу users_balance и задали типы данных для колонок")
-
+print("\033[32mДобро пожаловать в обменник валют\033[0m")
 
 """Вносим первого пользователя в таблицу.
 Безопасным способом от SQL-инъекций.
@@ -38,31 +39,33 @@ exc_txt = """Курс валют:
 1 USD = 0,87 EUR
 1 EUR = 1,15 USD"""
 
-def update_balance_rub(amount, balance, choice_2, data):
+d = {
+     '1': 'RUB',
+     '2': 'USD',
+     '3': 'EUR'
+}
+
+def update_balance(amount, choice_1, choice_2, balance, name_exc):
     """Функция для обновления данных в Balance_RUB"""
 
-    dict_exc = {
-                '2': 70,
-                '3': 80
+    code = choice_1 + choice_2
+    dict_code = {'12': 1/70, '13': 1/80,
+         '21': 70, '23': 0.87,
+         '31': 80, '32': 1.15
     }
 
-    print(amount, balance, choice_2, data)
-    print()
-    print(dict_exc)
+    update_amount = amount * dict_code[code] # Сумма на которую увеличим старый баланс
+    new_balance = balance - amount  # Баланс первой валюты, которую отдали для обмена
+    name_exc_ = 'Balance_' + d[choice_2] # Имя валюты у которой пополнили баланс при обмене
 
+    print(f'\nСвершен обмен валют {amount} {d[choice_1]} на {round(update_amount, 2)} {d[choice_2]}')
 
-def update_balance_usd(amount, balance, choice_2, data):
-    """Функция для обновления данных в Balance_USD"""
-
-    ...
-
-
-def update_balance_eur(amount, balance, choice_2, data):
-    """Функция для обновления данных в Balance_EUR"""
-
-    ...
-
-
+   # Обновляем users_balance новыми данными
+    cur.executescript(f"""
+        UPDATE users_balance SET {name_exc} = {new_balance};
+        UPDATE users_balance SET {name_exc_} =  {name_exc_} + {update_amount}
+    """)
+    db.commit() # Сохраняем изменения в БД
 
 def check_amount(amount, choice_1):
     """Проверка amount на правильность ввода и на остаток баланса"""
@@ -81,46 +84,43 @@ def check_amount(amount, choice_1):
     if amount > balance:
         raise Exception (f'\033[31mНедостаточно средств\033[0m: {name_exc} = {balance}\n'
                          'Повторите попытку')
-    d = {
-         '1': 'RUB',
-         '2': 'USD',
-         '3': 'EUR'
-    }
-    print(*[f"Введите [ {key} ] для обмена на {d[key]}"
+
+    print(*[f"\033[93mВведите [ {key} ] для обмена на {d[key]}\033[0m"
            for key, value in d.items() if key != choice_1], sep='\n') # Выводим список доступных валют для обмена
 
     choice_2 = input() # Выбор пользователя на что он будет менять свою валюту
-    match choice_2:
-        case '1':
-            update_balance_rub(amount, balance, choice_2, data)
-        case '2':
-            update_balance_usd(amount, balance, choice_2, data)
-        case '3':
-            update_balance_eur(amount, balance, choice_2, data)
-        case _:
-            raise Exception ("Произошла ошибка. Соблюдайте правильность ввода.")
+
+    if choice_2.isdigit() is not True:
+        raise Exception('\033[31mОшибка\033[0m: Нужно вводить только цифры без букв')
+    elif choice_1 == choice_2 or choice_2 not in ['1', '2', '3']: # Дополнительная проверка
+        raise Exception('\033[31mОшибка\033[0m: Выбирайте, пожалуйста, из доступных вариантов')
+
+    update_balance(amount, choice_1, choice_2, balance, name_exc) # Функция по обновлению баланса валют
+
+    print(' ⭐  Программа успешно завершена ⭐ ')
+
 
 def func():
     """Выбираем валюту для обмена"""
 
     while True:
         try:
-            txt = ("Введите [ 1 ] если хотите обменять RUB\n"
+            txt = ("\033[93mВведите [ 1 ] если хотите обменять RUB\n"
                    "Введите [ 2 ] если хотите обменять USD\n"
                    "Введите [ 3 ] если хотите обменять EUR\n"
-                   "Введите [ 4 ] чтобы вывести курс валют\n"
-                   "Чтобы выйти введите любой символ")
+                   "Введите [ 4 ] чтобы вывести курс валют\033[0m\n"
+                   "Чтобы \033[31mвыйти\033[0m введите любой символ")
             print(txt)
 
             choice_1 = input() # Выбор валюты от пользователя согласно тексту в txt
 
             match choice_1:
                 case '1':
-                    print('Сколько меняем RUB?')
+                    print('Сколько желаете обменять RUB?')
                 case '2':
-                    print('Сколько меняем USD?')
+                    print('Сколько желаете обменять USD?')
                 case '3':
-                    print('Сколько меняем EUR?')
+                    print('Сколько желаете обменять EUR?')
                 case '4':
                     print(exc_txt)
                     raise Exception
@@ -129,9 +129,9 @@ def func():
 
             amount = input() # Желаемая сумма для обмена на другую валюту
             check_amount(amount, choice_1) # Проверка введенной суммы (amount)
-
             break
         except Exception as e:
             print(e)
 
-func()
+if __name__ == '__main__':
+    func() # стартуем
