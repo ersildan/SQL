@@ -22,3 +22,22 @@ class SQL_atm:
             cur = db.cursor()  # Переменная для управления запросом
             cur.execute("""INSERT INTO Users_data (Number_card, Pin_code, Balance) VALUES(?,?,?);""", data_users)
             print("Создание нового пользователя")
+
+
+    """Ввод и проверка карты"""
+
+    @staticmethod
+    def input_card(number_card):
+        try:
+            with sqlite3.connect("atm.db") as db:
+                cur = db.cursor() # Переменная для управления запросом
+                cur.execute(f"""SELECT Number_card FROM Users_data WHERE Number_card = {number_card}""")
+                result_card = cur.fetchone()
+                if result_card == None:
+                    print('Введен неизвестный номер карты')
+                else:
+                    print(f'Введен номер карты: {number_card}')
+
+
+        except:
+            print("Ошибка: введен некорректный номер карты")
