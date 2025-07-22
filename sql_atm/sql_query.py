@@ -35,9 +35,29 @@ class SQL_atm:
                 result_card = cur.fetchone()
                 if result_card == None:
                     print('Введен неизвестный номер карты')
+                    return False
                 else:
                     print(f'Введен номер карты: {number_card}')
-
+                    return True
 
         except:
             print("Ошибка: введен некорректный номер карты")
+
+    """Ввод и проверка пин-код"""
+
+    @staticmethod
+    def input_code(number_card):
+        pin_code = input("Введите, пожалуйста, пин-код карты: \n")
+        with sqlite3.connect("atm.db") as db:
+            cur = db.cursor() # Переменная для управления запросом
+            cur.execute(f"""SELECT Pin_code FROM Users_data WHERE Number_card = {number_card}""")
+            result_code = cur.fetchone()
+            input_pin = result_code[0] # значение пин-кода
+            try:
+                if input_pin == int(pin_code):
+                    print("введен верный пин-код")
+                    return True
+                else:
+                    return False
+            except:
+                print('Ошибка: Введен некорректный пин-код')

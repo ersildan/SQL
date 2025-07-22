@@ -6,12 +6,15 @@ class ATM():
     def atm_logic(self):
 
         SQL_atm.create_table()
-        SQL_atm.insert_users((43121, 2222, 15000))
-        number_card = input('Введите, пожалуйста, номер карты:\n')
+        SQL_atm.insert_users((1234, 1111, 10000))
+        number_card = input('Введите, пожалуйста, номер карты: ')
 
         while True:
             if SQL_atm.input_card(number_card):
-                print('Успех')
+                if SQL_atm.input_code(number_card):
+                    print("2222")
+                else:
+                    break
             else:
                 break
 start = ATM()
