@@ -5,10 +5,10 @@ cur = db.cursor() # Переменная для управления БД
 
 cur.execute("""SELECT * FROM Students;""")
 
-#result_one = cur.fetchone() # Одно значений
-#name = result_one[1]
-# print(result_one) # (1, 'Ivan', 'Ivanov')
-# print(name) # Ivan
+result_one = cur.fetchone() # Одно значений
+name = result_one[1]
+print(result_one) # (1, 'Ivan', 'Ivanov')
+print(name) # Ivan
 
 # result_many = cur.fetchmany(2) # Несколько значений
 # print(result_many) # [(1, 'Ivan', 'Ivanov'), (2, 'Petr', 'Petrov')]
