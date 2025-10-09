@@ -6,5 +6,3 @@ SELECT
             / 
             (COUNT(order_id) :: DECIMAL ) , 2 ) AS large_orders_share
 FROM orders;
-
--- text
