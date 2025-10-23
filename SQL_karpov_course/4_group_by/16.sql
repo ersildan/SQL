@@ -1,16 +1,12 @@
 SELECT 
-    bs.buy_id,
-    DATEDIFF(bs.date_step_end, bs.date_step_beg) AS Количество_дней,
-    CASE
-        WHEN DATEDIFF(bs.date_step_end, bs.date_step_beg) > ci.days_delivery 
-        THEN DATEDIFF(bs.date_step_end, bs.date_step_beg) - ci.days_delivery 
-        ELSE 0
-    END 
-    AS Опоздание
-FROM buy_step bs
-INNER JOIN buy b USING(buy_id)
-INNER JOIN client c USING(client_id)
-INNER JOIN city ci USING(city_id)
-INNER JOIN step s USING(step_id)
-WHERE s.name_step = 'Транспортировка' 
-AND DATEDIFF(bs.date_step_end, bs.date_step_beg) IS NOT NULL;
+    case 
+    when EXTRACT(YEAR FROM  AGE(current_date, birth_date)) between 18 and 24 then '18-24'
+    when EXTRACT(YEAR FROM AGE(current_date, birth_date)) between 25 and 29 then '25-29'
+    when EXTRACT(YEAR FROM  AGE(current_date, birth_date)) between 30 and 35 then '30-35'
+    else '36+'
+    end as group_age,
+    count(*) as users_count
+FROM   users
+WHERE  birth_date is not null
+GROUP BY group_age
+ORDER BY group_age;
