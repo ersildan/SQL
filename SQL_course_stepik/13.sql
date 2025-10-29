@@ -10,3 +10,8 @@ SELECT
          ))
     AS moving_average
 FROM income;
+
+
+-- SELECT date_id, income,
+-- 	ROUND(AVG(income) OVER (ORDER BY date_id ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING), 0) AS moving_average
+-- FROM income;

@@ -1,0 +1,14 @@
+SET @total = 0;
+
+SELECT
+    date_id,
+    (@total := @total + 1) AS rnk
+FROM dates
+ORDER BY date_id DESC;
+
+-- SELECT d1.date_id,
+-- 	COUNT(*) AS rnk
+-- FROM dates d1 JOIN dates d2
+-- ON d1.date_id <= d2.date_id
+-- GROUP BY d1.date_id
+-- ORDER BY rnk;
