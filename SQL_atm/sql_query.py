@@ -124,7 +124,7 @@ class SQL_atm:
                     SQL_atm.info_balance(number_card)
                     return True
             except:
-                print('Попытка выполнить некорректные действия')
+                print('Некорректное действие. Повторите попытку.')
                 return False
             
 
@@ -139,7 +139,6 @@ class SQL_atm:
                 if int(amount) < 0:
                     print("Нельзя вводить отрицательное число")
                     raise Exception
-                cur = db.cursor()
                 cur.execute(
                     f"""
                     UPDATE Users_data
@@ -150,17 +149,58 @@ class SQL_atm:
                 db.commit()
                 SQL_atm.info_balance(number_card)
             except:
-                print('Попытка выполнить некорректное действие')
+                print('Некорректное действие. Повторите попытку.')
                 return False
     
     @staticmethod
     def transfer_money(number_card):
-        """Внесение денежных средств"""
+        """Перевод денежных средств на другую карту"""
         
         amount = input('Введите сумму для перевода: ')
         with sqlite3.connect("SQL_atm/atm.db") as db:
             cur = db.cursor()
-            pass
+            cur.execute(f"""
+                SELECT Balance 
+                FROM Users_data 
+                WHERE Number_card = {number_card};
+            """)
+            result_info_balance = cur.fetchone()
+            balance_card = result_info_balance[0]
+            try:
+                if int(amount) < 0:
+                    print("Нельзя вводить отрицательное число")
+                    raise Exception
+                elif int(amount) > balance_card:
+                    print("Ошибка: Недостаточно средств")
+                    return  False
+                else:
+                    target_card = input("Введите номер карты получателя: ")
+                    if target_card == number_card:
+                        print("Ошибка: Нельзя сделать перевод на свою карту.")
+                        return False
+                    SQL_atm.input_card(target_card)
+                    cur = db.cursor()
+                    cur.execute(
+                        f"""
+                        UPDATE Users_data
+                        SET Balance = Balance - {amount}
+                        WHERE Number_card = {number_card}               
+                        """
+                    )
+                    db.commit()
+                    cur.execute(
+                        f"""
+                        UPDATE Users_data
+                        SET Balance = Balance + {amount}
+                        WHERE Number_card = {target_card}
+                        """
+                    )
+                    db.commit()
+                    SQL_atm.info_balance(number_card)
+            except:
+                print('Некорректное действие. Повторите попытку снова.')
+                return False
+            
 
 
     @staticmethod
@@ -172,7 +212,8 @@ class SQL_atm:
                             "1. Узнать баланс\n" \
                             "2. Снять денежные средства\n" \
                             "3. Внести денежные средства\n" \
-                            "4. Завершить работу\n")
+                            "4. Завершить работу\n" \
+                            "5. Перевести денежные средства\n")
             match operation:
                 case "1":
                     SQL_atm.info_balance(number_card)
