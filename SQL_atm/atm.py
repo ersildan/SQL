@@ -1,7 +1,7 @@
 from sql_query import SQL_atm
 
 
-class ATM():
+class ATM:
 
     def atm_logic(self):
 
